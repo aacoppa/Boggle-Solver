@@ -46,6 +46,7 @@ public:
     };
     Board(int w, int h, int maxlength = 25);
     Board(int w, int h, std::string me, int maxlength = 25);
+    void printSpaceUsed();
     void print();
     void solve();
     void printNeighbors(int x, int y);

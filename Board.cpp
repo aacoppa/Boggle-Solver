@@ -13,12 +13,12 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
-//#include "DictionaryTree.h"
 #include "math.h"
 #include "time.h"
 #include "stdio.h"
 #include "stdlib.h"
 
+//Two constructors... random generation versus user inputted build
 Board::Board(int w, int h, int maxlength) {
     dict = new DictionaryTree();
     std::cout <<"Loading..." << '\n';
@@ -26,7 +26,6 @@ Board::Board(int w, int h, int maxlength) {
     width = w + 2;
     height = h + 2;
     board = new Tile[width * height];
-    load();
     build();
     std::cout << "Done building...";
 }
@@ -38,10 +37,10 @@ Board::Board(int w, int h, std::string, int maxlength) {
     width = w + 2;
     height = h + 2;
     board = new Tile[width * height];
-    load();
     buildRandom();
     std::cout << "Done building...";
 }
+//Build, but use random charecters....
 void Board::buildRandom() {
     srand(time(NULL));
     char ch;
@@ -58,8 +57,6 @@ void Board::buildRandom() {
             ch = (char) (rand() % 26 + 'a');
             board[j*width + i].name=ch;
             board[j*width + i].alive=true;
-            //Here we draw the last letter before moving on
-            //std::cout<<board[i][j].name+" ";
         }
     }
     for(int i = 1; i < width - 1; i++) {
@@ -78,11 +75,12 @@ void Board::build() {
             board[j*width + i].y = j;
         }
     }
+    //initted the array
     for(int i=1; i<width-1; i++) {
         
         for(int j=1; j<height-1; j++) {
             
-            //board[i][j].name=std::
+            //Read in each charecter...
             while(true) {
                 std::cin>>ch;
                 if(isalpha(ch) != 0) {
@@ -91,17 +89,16 @@ void Board::build() {
             }
             board[j*width + i].name=ch;
             board[j*width + i].alive=true;
-            //Here we draw the last letter before moving on
-            //std::cout<<board[i][j].name+" ";
         }
-        //std::cout<<"\n";
     }
+    //Then init the neighbors for each...
     for(int i = 1; i < width - 1; i++) {
         for(int j = 1; j < height - 1; j++) {
             findNeighbors(i, j);
         }
     }
 }
+
 void Board::print() {
     std::cout<<" "<<std::endl;
     for(int i = 1; i < height - 1; i++) {
@@ -112,37 +109,9 @@ void Board::print() {
     }
     std::cout<<" "<<std::endl;
 }
-void Board::load() {
-    std::ifstream myFile, myFile2, myFile3;
-    myFile.open("data/dictionary.txt");
-    if(myFile.is_open()) {
-        while(!myFile.eof()) {
-            std::string line;
-            getline(myFile, line);
-            dictionary.push_back(line);
-        }
-        myFile.close();
-    }
-    myFile2.open("data/prunelist4.txt");
-    if(myFile2.is_open()) {
-        while(!myFile2.eof()) {
-            std::string line;
-            getline(myFile2, line);
-            prunelist.push_back(line);
-        }
-        myFile2.close();
-    }
-    myFile3.open("data/prunelist12.txt");
-    if(myFile3.is_open()) {
-        while(!myFile3.eof()) {
-            std::string line;
-            getline(myFile3, line);
-            prunelist12.push_back(line);
-        }
-        myFile3.close();
-    }
-}
+//For initting...
 void Board::findNeighbors(int x, int y) {
+    //Get all the board neighbors...
     board[y*width + x].neighbors[0] = &board[(y - 1) * width + x];
     board[y*width + x].neighbors[1] = &board[y * width + x + 1];
     board[y*width + x].neighbors[2] = &board[(y + 1) * width + x];
@@ -159,108 +128,58 @@ void Board::printNeighbors(int x, int y) {
         if(board[y*width + x].neighbors[i]->alive) std::cout<<board[y*width + x].neighbors[i]->name;
     }
 }
-bool Board::contains(std::string key, int min, int max) {
-    int half;
-    half = (max + min) / 2;
-    //std::cout<<half<<std::endl;
-    if(key == dictionary[half]) return true;
-    if(max - min < 2) return false;
-    if(key > dictionary[half] ) {
-        return contains(key, half + 1, max);
-    }
-    else {
-        return contains(key, min, half - 1);
-    }
-    
+void Board::printSpaceUsed() {
+    std::cout << "Printing used space by DictionaryTree..." << std::endl;
+    dict->printSizeData();
 }
-/*bool Board::prune(std::string test, int min, int max) {
-    int half;
-    half = (max + min) / 2;
-    //std::cout<<half<<std::endl;
-    if(test == prunelist[half]) return true;
-    if(max - min < 2) return false;
-    if(test > prunelist[half] ) {
-        return prune(test, half + 1, max);
-    }
-    else {
-        return prune(test, min, half - 1);
-    }
-    return false;  
-}
-bool Board::prune12(std::string test, int min, int max) {
-    int half;
-    half = (max + min) / 2;
-    if(test == prunelist12[half]) return true;
-    if(max - min < 2) return false;
-    if(test > prunelist12[half] ) {
-        return prune12(test, half + 1, max);
-    }
-    else {
-        return prune12(test, min, half - 1);
-    }
-    return false;  
-}
-bool Board::pruneLinear(std::string test) {
-    for(int i = 0; i < prunelist.size(); i++) {
-        if(test.find(prunelist[i])!=std::string::npos) return true;
-    }
-    return false;  
-}*/
+//Check to see if we can prune...
 bool Board::pruneable(std::string str) {
     return dict->prunable(str);
 }
+//Recursive function for sovling... uses curr and x,y to mark
+//Position and string
 void Board::solver(int x, int y) {
-   // std::cout<<curr.size()<<std::endl;
-   //s std::cout<<curr<<std::endl;
+    //curr is a instance variable that has the current string
     if(dict->searchFor(curr)) {
-        contents.insert(curr);
+        contents.insert(curr); //If its a word add it
     } 
-    if(curr.size() < MAXLENGTH) {
-        std::string holder;
-        if(curr.size() > 4) {
-            holder = curr.substr(curr.size() - 4, 4); 
-        } else {
-            holder = curr;
-        }
-        /*if(curr.size() >= 12) {
-            std::cout<<"ASD"<<std::endl;
-            std::string a = curr.substr(0, 12); 
-            if(!prune12(a, 0, prunelist12.size())) return;
-        }*/
-        if(!pruneable(holder)){
+    if(curr.size() < MAXLENGTH) { //Somewhat deprecated if, from when this was too slow
+        if(!pruneable(curr)){ //Prunes if we are too far
             board[y * width + x].alive = false;
             std::string hold = curr;
             curr.append(&board[y * width + x].name);
+            //Loop through each possible neighbor
             for(int i = 0; i < 8; i++) {
                 if(board[y * width + x].neighbors[i]->alive) {
                     solver(board[y * width + x].neighbors[i]->x,board[y * width + x].neighbors[i]->y); 
                 }
             }
+            //Reset after the recursion...
             curr = hold;
             board[y * width + x].alive = true;
         }
     }
 }
+//Will solve using initted board
 void Board::solve() {
-    std::cout<<"Starting clock..."<<std::endl;
-    t1 = clock();
-    for(int i = 1; i < width - 1; i++) {
-        
+    std::cout << "Getting ready to start algorithm..." << std::endl;
+    std::cout<<"Starting clock and going!"<<std::endl;
+    t1 = clock(); //Start clocking...
+    for(int i = 1; i < width - 1; i++) { 
         for(int j = 1; j < height - 1; j++) {
-            //START WITH EACH LETTER 
-            
+            //START WITH EACH LETTER         
             solver(i, j);     
         }
     }
-    t2 = clock();
+    t2 = clock(); //Stop clocking...
     std::cout << "Clock stopped. Printing words found..." << std::endl;
     std::set<std::string>::iterator it;
         for(it = contents.begin(); it!=contents.end(); it++) {
             std::string str = *it;
             if(str.size() > 2) std::cout<<*it<<std::endl;
         }
+    //Calculate the time...
     float diff = ((float)t2-(float)t1);
     float seconds = diff / CLOCKS_PER_SEC;
     std::cout<<"Total time elapsed: " << seconds << " seconds" << "\n";
-    //std::cout<<"Done";
 }
