@@ -30,6 +30,7 @@ private:
     bool prune(std::string test, int max, int min);
     bool prune12(std::string test, int max, int min);
     bool pruneLinear(std::string test);
+    bool pruneable(std::string str);
     clock_t t1, t2;
 public:
     int width;

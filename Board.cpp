@@ -173,7 +173,7 @@ bool Board::contains(std::string key, int min, int max) {
     }
     
 }
-bool Board::prune(std::string test, int min, int max) {
+/*bool Board::prune(std::string test, int min, int max) {
     int half;
     half = (max + min) / 2;
     //std::cout<<half<<std::endl;
@@ -205,6 +205,9 @@ bool Board::pruneLinear(std::string test) {
         if(test.find(prunelist[i])!=std::string::npos) return true;
     }
     return false;  
+}*/
+bool Board::pruneable(std::string str) {
+    return dict->prunable(str);
 }
 void Board::solver(int x, int y) {
    // std::cout<<curr.size()<<std::endl;
@@ -224,7 +227,7 @@ void Board::solver(int x, int y) {
             std::string a = curr.substr(0, 12); 
             if(!prune12(a, 0, prunelist12.size())) return;
         }*/
-        if(!prune(holder, 0, prunelist.size())) {
+        if(!pruneable(holder)){
             board[y * width + x].alive = false;
             std::string hold = curr;
             curr.append(&board[y * width + x].name);

@@ -13,7 +13,7 @@ int main(int argc, char * argv[])
 {
     std::cout << "Starting up testing functions..." << '\n';
     std::cout << "First running on a randomly created board" << '\n';
-    Board board(5, 5, "Str", 20);
+    Board board(5, 5, "Str", 10000);
     board.print();
     std::cout << "Solving and printing words..." << '\n';
     board.solve();

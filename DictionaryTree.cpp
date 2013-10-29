@@ -79,6 +79,12 @@ bool DictionaryTree::searchHelp(std::string & str, int currChar, node * a) {
     if( a->next[val] == NULL) return false;
     return DictionaryTree::searchHelp(str, currChar + 1, a->next[val]);
 }
+bool DictionaryTree::prunableHelp(std::string str, int currChar, node * a) {
+    if(currChar == str.size() - 1) return false;
+    int val = hash(str[currChar + 1]);
+    if( a->next[val] == NULL) return true;
+    return DictionaryTree::prunableHelp(str, currChar + 1, a->next[val]);
+}
 void DictionaryTree::printContents() {
     //std::cout << "A";
     for(char * ch = new char('a'); *ch <= 'z'; (*ch)++) {
@@ -97,7 +103,12 @@ void DictionaryTree::printContentsHelp(std::string & str, node * a) {
         str = hold;
     }
 }
+bool DictionaryTree::prunable(std::string str) {
+    if(str == "") return false;
+    return prunableHelp(str, 0, head[hash(str[0])]);
+}
 bool DictionaryTree::searchFor(std::string str) {
     if(str == "") return false;
     return searchHelp(str, 0, head[hash(str[0])]);
 }
+
