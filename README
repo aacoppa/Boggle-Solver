@@ -27,3 +27,9 @@ Replace dictionary.txt with any dictionary you want to get rid of some awkward
 words.
 Have faith! A lot of the words found don't seem like words, but if you check, they're
 in the dictionary.
+
+To input your own BoggleBoard change the arguments in main.c from:
+Board board(5, 5, "str", 25);
+to:
+Board board(numColumns, numRows, numColumns * numRows);
+//The str input makes the board create itself instead of asking for user input
