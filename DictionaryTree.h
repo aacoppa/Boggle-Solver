@@ -28,7 +28,7 @@ class DictionaryTree {
     node * head[26];
     bool searchHelp(std::string & str, int currChar, node * a);
     bool prunableHelp(std::string str, int currChar, node * a);
-    
+    void freeTreeFromNode(node * a);
     public:
     long size;
     long entries;
@@ -36,6 +36,7 @@ class DictionaryTree {
     void printSizeData();
     bool searchFor(std::string str);
     bool prunable(std::string str);
+    void freeTree();
     DictionaryTree();
 };
 

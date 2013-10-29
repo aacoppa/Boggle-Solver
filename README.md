@@ -4,9 +4,11 @@ Boggle-Solver
 A program that finds all the words in a Boggle board of ANY SIZE...
 Optimized via a multitude of methods to run EXTREMELY FAST:
 
-For a ten by ten board it averages .1 seconds
+For a 10 by 10 board it averages around .1 seconds
+Run on an 100 by 100 letter board, it takes around 30 seconds
+and can find over 10,000 words.
 
-However, a large amount of space is used... To see how much call
+There is a large space trade off for such impressive speeds... To see how much call
 Board.printSpaceUsed();
 
 1. A O(length of word) search time through a dictionary of over 20,000 words

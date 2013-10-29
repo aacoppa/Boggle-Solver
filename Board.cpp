@@ -168,6 +168,7 @@ void Board::solve() {
     for(int i = 1; i < width - 1; i++) { 
         for(int j = 1; j < height - 1; j++) {
             //START WITH EACH LETTER         
+            //std::cout << "Doing letter: " << i * height + j << std::endl;
             solver(i, j);     
         }
     }

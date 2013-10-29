@@ -116,4 +116,15 @@ bool DictionaryTree::searchFor(std::string str) {
     if(str == "") return false;
     return searchHelp(str, 0, head[hash(str[0])]);
 }
-
+void DictionaryTree::freeTreeFromNode(node * a) {
+   if(a == NULL) return;
+   for(char * ch = new char('a'); *ch <= 'z'; (*ch)++) {
+       freeTreeFromNode(a->next[hash(*ch)]);
+       free(a->next[hash(*ch)]);
+   }
+}
+void DictionaryTree::freeTree() {
+    for(char * ch = new char('a'); *ch <= 'z'; (*ch)++) {
+    freeTreeFromNode(head[hash(*ch)]);
+    }
+}
